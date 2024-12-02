@@ -1,7 +1,3 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
-setup(
-    name="minitorch",
-    version="0.4",
-    packages=find_packages(),
-)
+setup(py_modules=[])
