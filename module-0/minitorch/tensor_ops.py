@@ -6,6 +6,7 @@ import numpy as np
 from typing_extensions import Protocol
 
 from . import operators
+from .cuda_ops import _tensor_matrix_multiply
 from .tensor_data import (
     MAX_DIMS,
     broadcast_index,
@@ -17,7 +18,7 @@ from .tensor_data import (
 if TYPE_CHECKING:
     from .tensor import Tensor
     from .tensor_data import Index, Shape, Storage, Strides
-
+    
 
 class MapProto(Protocol):
     def __call__(self, x: Tensor, out: Optional[Tensor] = ..., /) -> Tensor:
@@ -45,7 +46,21 @@ class TensorOps:
 
     @staticmethod
     def matrix_multiply(a: Tensor, b: Tensor) -> Tensor:
-        raise NotImplementedError("Not implemented in this assignment")
+        # check dimensions
+        assert a.shape[-1] == b.shape[-2], "Shapes incompatible for matmul"
+        
+        # Create output tensor shape
+        out_shape = (*a.shape[:-2], a.shape[-2], b.shape[-1])
+        out = a.zeros(out_shape)
+
+        # Perform matrix multiplication (optimized implementation)
+        a_data, b_data, out_data = a._tensor, b._tensor, out._tensor
+        _tensor_matrix_multiply(
+            out_data._storage, out_data._shape, out_data._strides,
+            out_data.size, a_data._storage, a_data._shape, a_data._strides,
+            b_data._storage, b_data._shape, b_data._strides
+        )
+        return out
 
     cuda = False
 
@@ -222,7 +237,43 @@ class SimpleOps(TensorOps):
 
     @staticmethod
     def matrix_multiply(a: "Tensor", b: "Tensor") -> "Tensor":
-        raise NotImplementedError("Not implemented in this assignment")
+        # Check compatibility of shapes
+        assert a.shape[-1] == b.shape[-2], "Shapes incompatible for matmul"
+
+        # Create output tensor shape
+        out_shape = (*a.shape[:-2], a.shape[-2], b.shape[-1])
+        out = a.zeros(out_shape)
+
+        # Extract data
+        a_data, b_data, out_data = a._tensor, b._tensor, out._tensor
+
+        # Iterate over all combinations of output indices
+        out_index = np.zeros(len(out_shape), dtype=int)
+        a_index = np.zeros(len(a.shape), dtype=int)
+        b_index = np.zeros(len(b.shape), dtype=int)
+
+        for ordinal in range(out_data.size):
+            # Convert ordinal to multidimensional index for output
+            to_index(ordinal, out_shape, out_index)
+
+            # Calculate positions for `a` and `b` using broadcast logic
+            dot_product = 0.0
+            for k in range(a.shape[-1]):
+                for i in range(len(out_index)):
+                    a_index[i] = out_index[i]
+                    b_index[i] = out_index[i]
+                a_index[-1] = k
+                b_index[-2] = k
+
+                a_pos = index_to_position(a_index, a_data._strides)
+                b_pos = index_to_position(b_index, b_data._strides)
+                dot_product += a_data._storage[a_pos] * b_data._storage[b_pos]
+
+            # Write the result into the output tensor
+            out_pos = index_to_position(out_index, out_data._strides)
+            out_data._storage[out_pos] = dot_product
+
+        return out
 
     is_cuda = False
 

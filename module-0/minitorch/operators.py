@@ -46,12 +46,16 @@ def relu_back(num1: float, num2: float) -> float:
     return num2 if num1 > 0 else 0.0
 
 
+# changed lt, gt, eq so numba no-python mode doesn't get mad at the float(bool) and just simplifies it to a float
 def lt(num1: float, num2: float) -> float:
-    return float(num1 < num2)
+    return 1.0 if num1 < num2 else 0.0
+
+def gt(num1: float, num2: float) -> float:
+    return 1.0 if num1 > num2 else 0.0
 
 
 def eq(num1: float, num2: float) -> float:
-    return float(num1 == num2)
+    return 1.0 if num1 == num2 else 0.0
 
 
 def sigmoid(num: float) -> float:
