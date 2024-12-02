@@ -1,36 +1,20 @@
-# MiniTorch Module 4
+[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=16387068&assignment_repo_type=AssignmentRepo)
+# MiniTorch Module 0
 
 <img src="https://minitorch.github.io/minitorch.svg" width="50%">
 
 * Docs: https://minitorch.github.io/
 
-* Overview: https://minitorch.github.io/module4.html
+* Overview: https://minitorch.github.io/module0/module0/
 
-This module requires `fast_ops.py`, `cuda_ops.py`, `scalar.py`, `tensor_functions.py`, `tensor_data.py`, `tensor_ops.py`, `operators.py`, `module.py`, and `autodiff.py` from Module 3.
-
-
-Additionally you will need to install and download the MNist library.
-
-(On Mac, this may require installing the `wget` command)
-
-```
-pip install python-mnist
-mnist_get_data.sh
-```
+**Task 0.5 Visualization**
 
 
-* Tests:
+Original Dataset (Diagonal): \
+![newplot (1)](https://github.com/user-attachments/assets/713d13b3-27ec-432a-bbb8-cf22c89f39ab)
 
-```
-python run_tests.py
-```
+Linear weights and biases: \
+<img width="722" alt="Screenshot 2024-10-09 at 10 03 41 AM" src="https://github.com/user-attachments/assets/a1f11ac2-2700-401a-b7bc-ab8b4421ca00">
 
-This assignment requires the following files from the previous assignments. You can get these by running
-
-```bash
-python sync_previous_module.py previous-module-dir current-module-dir
-```
-
-The files that will be synced are:
-
-        minitorch/tensor_data.py minitorch/tensor_functions.py minitorch/tensor_ops.py minitorch/operators.py minitorch/scalar.py minitorch/scalar_functions.py minitorch/module.py minitorch/autodiff.py minitorch/module.py project/run_manual.py project/run_scalar.py project/run_tensor.py minitorch/operators.py minitorch/module.py minitorch/autodiff.py minitorch/tensor.py minitorch/datasets.py minitorch/testing.py minitorch/optim.py minitorch/tensor_ops.py minitorch/fast_ops.py minitorch/cuda_ops.py project/parallel_check.py tests/test_tensor_general.py
+Result: \
+![newplot](https://github.com/user-attachments/assets/cd03abc8-33de-4ec0-8308-f151b4cfe739)

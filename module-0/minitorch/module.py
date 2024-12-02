@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Sequence, Tuple
 
-from collections import deque
 
 class Module:
     """Modules form a tree that store parameters and other
@@ -32,23 +31,17 @@ class Module:
 
     def train(self) -> None:
         """Set the mode of this module and all descendent modules to `train`."""
-        queue = deque()
-        queue.append(self)
-
-        while queue:
-            cur: Module = queue.popleft()
-            cur.training = True
-            queue.extend(cur.modules())
+        self.training = True  # set self to true
+        # recursively set descendents to true
+        for module in self.modules():
+            module.train()
 
     def eval(self) -> None:
         """Set the mode of this module and all descendent modules to `eval`."""
-        queue = deque()
-        queue.append(self)
-
-        while queue:
-            cur: Module = queue.popleft()
-            cur.training = False
-            queue.extend(cur.modules())
+        self.training = False  # set self = false
+        # recursively set descendents to false
+        for module in self.modules():
+            module.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """Collect all the parameters of this module and its descendents.
@@ -58,29 +51,35 @@ class Module:
             The name and `Parameter` of each ancestor parameter.
 
         """
-        result = []
+        # start with empty list
+        sequence = []
 
-        queue = deque()
-        queue.append(("",self))
+        # add this module's parameters (pass it as a tuple)
+        for name, param in self._parameters.items():
+            sequence.append((name, param))
 
-        while queue:
-            cur_name, cur = queue.popleft()
-            for name, parameter in cur._parameters.items():
-                if cur_name:
-                    result.append((f"{cur_name}.{name}", parameter))
-                else:
-                    result.append((name, parameter))
-            names, modules = list(map(lambda x: f"{cur_name}.{x}" if cur_name else x, cur._modules.keys())), cur.modules()
-            queue.extend(zip(names, modules))
-        
-        return result
+        # recursively add descendent modules
+        for (
+            module_name,
+            module,
+        ) in self._modules.items():  # loop through each child module
+            for (
+                param_name,
+                param,
+            ) in (
+                module.named_parameters()
+            ):  # recursively call named_paramters() for each child module
+                sequence.append(
+                    (f"{module_name}.{param_name}", param)
+                )  # manually make param_name and add it w/ param to our list; using prefixing to differentiate more easily
 
+        return sequence
 
     def parameters(self) -> Sequence[Parameter]:
         """Enumerate over all the parameters of this module and its descendents."""
-        get_second_element = lambda x: x[1]
-
-        return [get_second_element(el) for el in self.named_parameters()]
+        # call named parameters to get all parameters who have names
+        # returns a tuple so just focus on the second return value -- param
+        return [param for _, param in self.named_parameters()]
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """Manually add a parameter. Useful helper for scalar parameters.
