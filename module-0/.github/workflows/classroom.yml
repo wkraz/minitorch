@@ -23,45 +23,47 @@ jobs:
         command: flake8 --ignore "N801, E203, E266, E501, W503, F812, E741, N803,
           N802, N806" minitorch/ tests/ project/; mypy minitorch/*
         timeout: 10
-    - name: Task 0.1
-      id: task-0-1
+        max-score: 10
+    - name: Task 1.1
+      id: task-1-1
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: Task 0.1
+        test-name: Task 1.1
         setup-command: sudo -H pip3 install -qr requirements.txt
-        command: pytest -m task0_1
+        command: pytest -m task1_1
         timeout: 10
-    - name: Task 0.2
-      id: task-0-2
+        max-score: 10
+    - name: Task 1.2
+      id: task-1-2
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: Task 0.2
+        test-name: Task 1.2
         setup-command: sudo -H pip3 install -qr requirements.txt
-        command: pytest -m task0_2
+        command: pytest -m task1_2
         timeout: 10
-    - name: Task 0.3
-      id: task-0-3
+    - name: task 1.3
+      id: task-1-3
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: Task 0.3
+        test-name: task 1.3
         setup-command: sudo -H pip3 install -qr requirements.txt
-        command: pytest -m task0_3
+        command: pytest -m task1_3
         timeout: 10
-    - name: Task 0.4
-      id: task-0-4
+    - name: Task 1.4
+      id: task-1-4
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: Task 0.4
+        test-name: Task 1.4
         setup-command: sudo -H pip3 install -qr requirements.txt
-        command: pytest -m task0_4
+        command: pytest -m task1_4
         timeout: 10
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
         SETUP_RESULTS: "${{steps.setup.outputs.result}}"
-        TASK-0-1_RESULTS: "${{steps.task-0-1.outputs.result}}"
-        TASK-0-2_RESULTS: "${{steps.task-0-2.outputs.result}}"
-        TASK-0-3_RESULTS: "${{steps.task-0-3.outputs.result}}"
-        TASK-0-4_RESULTS: "${{steps.task-0-4.outputs.result}}"
+        TASK-1-1_RESULTS: "${{steps.task-1-1.outputs.result}}"
+        TASK-1-2_RESULTS: "${{steps.task-1-2.outputs.result}}"
+        TASK-1-3_RESULTS: "${{steps.task-1-3.outputs.result}}"
+        TASK-1-4_RESULTS: "${{steps.task-1-4.outputs.result}}"
       with:
-        runners: setup,task-0-1,task-0-2,task-0-3,task-0-4
+        runners: setup,task-1-1,task-1-2,task-1-3,task-1-4
